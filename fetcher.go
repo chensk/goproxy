@@ -549,7 +549,6 @@ func walkEnvGOPROXY(envGOPROXY string, onProxy func(proxy *url.URL) error, onDir
 		return errors.New("missing GOPROXY")
 	}
 	var lastErr error
-	fmt.Printf("walking env %s\n", envGOPROXY)
 	for envGOPROXY != "" {
 		var (
 			proxy           string
@@ -563,6 +562,7 @@ func walkEnvGOPROXY(envGOPROXY string, onProxy func(proxy *url.URL) error, onDir
 			proxy = envGOPROXY
 			envGOPROXY = ""
 		}
+		fmt.Printf("current proxy: %s\n", proxy)
 		switch proxy {
 		case "direct":
 			return onDirect()
@@ -574,6 +574,7 @@ func walkEnvGOPROXY(envGOPROXY string, onProxy func(proxy *url.URL) error, onDir
 			return err
 		}
 		if err := onProxy(u); err != nil {
+			fmt.Printf("onProxy err: %s, fallBackOnError: %t\n", err, fallBackOnError)
 			if fallBackOnError || errors.Is(err, fs.ErrNotExist) {
 				lastErr = err
 				continue
