@@ -500,7 +500,7 @@ func (gf *GoFetcher) execGo(ctx context.Context, args ...string) ([]byte, error)
 	return output, nil
 }
 
-const defaultEnvGOPROXY = "https://proxy.golang.org,direct"
+const defaultEnvGOPROXY = "https://goproxy.byted.org|https://goproxy.cn|direct"
 
 // cleanEnvGOPROXY returns the cleaned envGOPROXY.
 func cleanEnvGOPROXY(envGOPROXY string) (string, error) {
@@ -571,6 +571,7 @@ func walkEnvGOPROXY(envGOPROXY string, onProxy func(proxy *url.URL) error, onDir
 			return err
 		}
 		if err := onProxy(u); err != nil {
+			fmt.Fprintf(os.Stderr, "fail to download from proxy: %s\n", err)
 			if fallBackOnError || errors.Is(err, fs.ErrNotExist) {
 				lastErr = err
 				continue

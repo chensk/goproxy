@@ -182,6 +182,7 @@ func (g *Goproxy) serveFetch(rw http.ResponseWriter, req *http.Request, target s
 		responseNotFound(rw, req, 86400, "invalid version")
 		return
 	}
+	fmt.Printf("prepare to download module %s-%s\n", modulePath, moduleVersion)
 	if !semver.IsValid(moduleVersion) {
 		if ext == ".info" {
 			g.serveFetchQuery(rw, req, target, modulePath, moduleVersion, noFetch)
@@ -256,6 +257,7 @@ func (g *Goproxy) serveFetchDownload(rw http.ResponseWriter, req *http.Request, 
 	}
 
 	if content, err := g.cache(req.Context(), target); err == nil {
+		fmt.Printf("cache hit for %s-%s", modulePath, moduleVersion)
 		responseSuccess(rw, req, content, contentType, cacheControlMaxAge)
 		return
 	} else if !errors.Is(err, fs.ErrNotExist) {
@@ -263,6 +265,7 @@ func (g *Goproxy) serveFetchDownload(rw http.ResponseWriter, req *http.Request, 
 		responseInternalServerError(rw, req)
 		return
 	}
+	fmt.Printf("cache miss for %s-%s", modulePath, moduleVersion)
 
 	info, mod, zip, err := g.fetcher.Download(req.Context(), modulePath, moduleVersion)
 	if err != nil {
@@ -285,6 +288,7 @@ func (g *Goproxy) serveFetchDownload(rw http.ResponseWriter, req *http.Request, 
 		{".mod", mod},
 		{".zip", zip},
 	} {
+		fmt.Printf("save cache for %s-%s", modulePath, moduleVersion)
 		if err := g.putCache(req.Context(), targetWithoutExt+cache.ext, cache.content); err != nil {
 			g.logErrorf("failed to cache module file: %s: %v", target, err)
 			responseInternalServerError(rw, req)
