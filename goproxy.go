@@ -257,7 +257,7 @@ func (g *Goproxy) serveFetchDownload(rw http.ResponseWriter, req *http.Request, 
 	}
 
 	if content, err := g.cache(req.Context(), target); err == nil {
-		fmt.Printf("cache hit for %s-%s", modulePath, moduleVersion)
+		fmt.Printf("cache hit for %s-%s\n", modulePath, moduleVersion)
 		responseSuccess(rw, req, content, contentType, cacheControlMaxAge)
 		return
 	} else if !errors.Is(err, fs.ErrNotExist) {
@@ -265,7 +265,7 @@ func (g *Goproxy) serveFetchDownload(rw http.ResponseWriter, req *http.Request, 
 		responseInternalServerError(rw, req)
 		return
 	}
-	fmt.Printf("cache miss for %s-%s", modulePath, moduleVersion)
+	fmt.Printf("cache miss for %s-%s\n", modulePath, moduleVersion)
 
 	info, mod, zip, err := g.fetcher.Download(req.Context(), modulePath, moduleVersion)
 	if err != nil {
