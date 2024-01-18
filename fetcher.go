@@ -344,11 +344,9 @@ func (gf *GoFetcher) Download(ctx context.Context, path, version string) (info, 
 	} else {
 		err = walkEnvGOPROXY(gf.envGOPROXY, func(proxy *url.URL) error {
 			infoFile, modFile, zipFile, err = gf.proxyDownload(ctx, path, version, proxy)
-			fmt.Printf("try to download from proxy %s for %s-%s, err: %s\n", proxy, path, version, err)
 			return err
 		}, func() error {
 			infoFile, modFile, zipFile, err = gf.directDownload(ctx, path, version)
-			fmt.Printf("try to download directly for %s-%s, err: %s\n", path, version, err)
 			return err
 		})
 	}
@@ -372,10 +370,12 @@ func (gf *GoFetcher) Download(ctx context.Context, path, version string) (info, 
 	if gf.sumdbClient != nil {
 		err = verifyModFile(gf.sumdbClient, modFile, path, version)
 		if err != nil {
+			fmt.Printf("verify mod file from sumdb failed: %s\n", err)
 			return
 		}
 		err = verifyZipFile(gf.sumdbClient, zipFile, path, version)
 		if err != nil {
+			fmt.Printf("verify zip file from sumdb failed: %s\n", err)
 			return
 		}
 	}

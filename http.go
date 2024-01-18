@@ -112,7 +112,6 @@ func httpGetTemp(ctx context.Context, client *http.Client, url, tempDir string) 
 	}
 	defer func() {
 		if err != nil {
-			fmt.Printf("http get %s error: %s\n", url, err)
 			os.Remove(f.Name())
 		}
 	}()
