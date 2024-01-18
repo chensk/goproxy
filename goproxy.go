@@ -182,7 +182,6 @@ func (g *Goproxy) serveFetch(rw http.ResponseWriter, req *http.Request, target s
 		responseNotFound(rw, req, 86400, "invalid version")
 		return
 	}
-	fmt.Printf("prepare to download module %s-%s\n", modulePath, moduleVersion)
 	if !semver.IsValid(moduleVersion) {
 		if ext == ".info" {
 			g.serveFetchQuery(rw, req, target, modulePath, moduleVersion, noFetch)

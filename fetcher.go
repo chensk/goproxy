@@ -344,9 +344,11 @@ func (gf *GoFetcher) Download(ctx context.Context, path, version string) (info, 
 	} else {
 		err = walkEnvGOPROXY(gf.envGOPROXY, func(proxy *url.URL) error {
 			infoFile, modFile, zipFile, err = gf.proxyDownload(ctx, path, version, proxy)
+			fmt.Printf("try to download from proxy %s for %s-%s, err: %s", proxy, path, version, err)
 			return err
 		}, func() error {
 			infoFile, modFile, zipFile, err = gf.directDownload(ctx, path, version)
+			fmt.Printf("try to download directly for %s-%s, err: %s", path, version, err)
 			return err
 		})
 	}
@@ -444,7 +446,6 @@ func (gf *GoFetcher) proxyDownload(ctx context.Context, path, version string, pr
 func (gf *GoFetcher) directDownload(ctx context.Context, path, version string) (infoFile, modFile, zipFile string, err error) {
 	output, err := gf.execGo(ctx, "mod", "download", "-json", path+"@"+version)
 	if err != nil {
-		fmt.Printf("download failed executing command for %s-%s, err: %s\n", path, version, err)
 		return
 	}
 	var download struct{ Info, GoMod, Zip string }
